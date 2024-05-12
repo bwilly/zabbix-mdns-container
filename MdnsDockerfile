@@ -1,0 +1,47 @@
+# Use the Zabbix server image as the base
+FROM zabbix/zabbix-server-pgsql:ubuntu-latest
+
+# Install additional packages if necessary
+#RUN apk add --no-cache <package-name>
+
+USER root
+
+# Install necessary packages using apt-get instead of apk
+RUN apt-get update && apt-get install -y \
+    avahi-daemon \
+    avahi-utils \
+    dbus \
+    libnss3-dev\
+#nss-mdns \
+    bash
+#    && rm -rf /var/lib/apt/lists/*
+
+
+# Copy a custom avahi-daemon.conf if you have specific configurations
+COPY avahi-daemon.conf /etc/avahi/avahi-daemon.conf
+
+# Setup D-Bus
+RUN dbus-uuidgen > /var/lib/dbus/machine-id
+
+RUN echo 'hosts: files mdns_minimal [NOTFOUND=return] dns' >> /etc/nsswitch.conf
+
+
+# Expose the mDNS UDP port 5353
+EXPOSE 5353
+
+
+# Optionally, copy new scripts or configuration files if needed
+COPY custom-script.sh /usr/local/bin/custom-script.sh
+
+# Make sure the custom script is executable
+RUN chmod +x /usr/local/bin/custom-script.sh
+
+# Switch back to the non-root user before setting the ENTRYPOINT
+#USER 1997
+
+# Set the ENTRYPOINT to use the custom script
+ENTRYPOINT ["/usr/local/bin/custom-script.sh"]
+
+# Correct CMD to the original from the base image
+CMD ["/usr/sbin/zabbix_server", "--foreground", "-c", "/etc/zabbix/zabbix_server.conf"]
+

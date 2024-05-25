@@ -36,3 +36,13 @@ PID   USER     TIME  COMMAND
 docker build -t ubuntu-mdns-zabbix-ext:latest -f MdnsDockerfile .
 
 
+TROUBLESHOOTING STEPS
+When restarting docker, unless proper command used, old files may persist, preventing avahi from starting. See example problem and fix below:
+
+root@06ab5e151956:/var/lib/zabbix# dbus-daemon --system
+dbus-daemon[13535]: Failed to start message bus: The pid file "/run/dbus/pid" exists, if the message bus is not running, remove this file
+root@06ab5e151956:/var/lib/zabbix# rm /run/dbus/pid
+root@06ab5e151956:/var/lib/zabbix# dbus-daemon --system
+root@06ab5e151956:/var/lib/zabbix# avahi-daemon --no-drop-root --daemonize --debug
+root@06ab5e151956:/var/lib/zabbix# avahi-browse -a
++   eth0 IPv4 06ab5e151956 [02:42:ac:15:00:05]              Workstation          local

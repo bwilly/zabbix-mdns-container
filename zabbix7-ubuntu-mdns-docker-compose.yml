@@ -2,7 +2,7 @@ version: "3.8"
 services:
   postgres-server:
     image: postgres:latest
-    container_name: ubuntu-zabbix-postgres-server
+    container_name: zabbix-postgres-server
     environment:
       - POSTGRES_USER=zabbix
       - POSTGRES_PASSWORD=saltzabbix80time
@@ -15,7 +15,7 @@ services:
 
   zabbix-snmptraps:
     image: zabbix/zabbix-snmptraps:latest
-    container_name: ubuntu-zabbix-snmptraps
+    container_name: zabbix-snmptraps
     volumes:
       - /zbx_instance/snmptraps:/var/lib/zabbix/snmptraps:rw
       - /var/lib/zabbix/mibs:/usr/share/snmp/mibs:ro
@@ -26,26 +26,31 @@ services:
     restart: unless-stopped
 
   zabbix-server-pgsql:
-    image: ubuntu-mdns-zabbix-ext:latest
-    container_name: ubuntu-zabbix-server-pgsql
+    image: zabbix7-ubuntu-mdns-ext:latest
+    container_name: zabbix-server-pgsql
+    volumes:
+      - ./log:/var/log/zabbix
     environment:
-      - DB_SERVER_HOST=ubuntu-zabbix-postgres-server
+      - DB_SERVER_HOST=postgres-server
       - POSTGRES_USER=zabbix
       - POSTGRES_PASSWORD=saltzabbix80time
       - POSTGRES_DB=zabbix
       - ZBX_ENABLE_SNMP_TRAPS=true
+      - ZBX_DEBUGLEVEL=3
     networks:
       - ubuntu-zabbix-net
     ports:
       - "10051:10051"
+    depends_on:
+      - postgres-server
     restart: unless-stopped
 
   zabbix-web-nginx-pgsql:
     image: zabbix/zabbix-web-nginx-pgsql:latest
-    container_name: ubuntu-zabbix-web-nginx-pgsql
+    container_name: zabbix-web-nginx-pgsql
     environment:
-      - ZBX_SERVER_HOST=ubuntu-zabbix-server-pgsql
-      - DB_SERVER_HOST=ubuntu-zabbix-postgres-server
+      - ZBX_SERVER_HOST=zabbix-server-pgsql
+      - DB_SERVER_HOST=postgres-server
       - POSTGRES_USER=zabbix
       - POSTGRES_PASSWORD=saltzabbix80time
       - POSTGRES_DB=zabbix

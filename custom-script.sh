@@ -4,15 +4,8 @@ ls
 #touch /var/log/docker-bwilly.log
 
 # Test writing to /tmp/dbus_errors.log
-echo "1. Testing log writing to /var/log/docker-bwilly.log" >>  /var/log/docker-bwilly.log
+echo "1. From custom script for conatiner, Testing log writing to /var/log/docker-bwilly.log" >>  /var/log/docker-bwilly.log
 
-#mkdir -p /run/dbus
-#mkdir -p /run/dbus && \
-#dbus-daemon --system
-
-
-# Create necessary directories
-#mkdir -p /run/dbus
 # Create necessary directories and ensure permissions are correct
 mkdir -p /run/dbus /var/run/dbus
 
@@ -42,15 +35,14 @@ dbus-daemon --system
 # Start avahi-daemon
 avahi-daemon --no-drop-root --daemonize --debug
 
+
 # Tail /dev/null to keep the container running
 tail -f /dev/null &
-
-#/mylog.sh; dbus-daemon --system; avahi-daemon --no-drop-root --daemonize --debug; tail -f /dev/null
 
 
 #sleep infinity
 
 # Replace 'sleep infinity' with the line below to start Zabbix server
-#exec "$@"
+exec "$@"
 # Execute the parent image's ENTRYPOINT using tini
-exec /usr/bin/tini -- /usr/bin/docker-entrypoint.sh "$@"
+#exec /usr/bin/tini -- /usr/bin/docker-entrypoint.sh "$@"

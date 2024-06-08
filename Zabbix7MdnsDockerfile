@@ -1,5 +1,7 @@
 # Use the Zabbix server image as the base
-FROM zabbix/zabbix-server-pgsql:ubuntu-latest
+#FROM zabbix/zabbix-server-pgsql:ubuntu-latest
+FROM zabbix/zabbix-server-pgsql:ubuntu-7.0-latest
+
 
 # Install additional packages if necessary
 #RUN apk add --no-cache <package-name>
@@ -8,6 +10,7 @@ USER root
 
 # Install necessary packages using apt-get instead of apk
 RUN apt-get update && apt-get install -y \
+    nano \
     avahi-daemon \
     avahi-utils \
     dbus \

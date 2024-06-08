@@ -33,7 +33,16 @@ PID   USER     TIME  COMMAND
 
 =======================
 
+More recent naming (May 29, 2024):
+
 docker build -t ubuntu-mdns-zabbix-ext:latest -f MdnsDockerfile .
+docker-compose -f ubuntu-mdns-docker-compose.yml down
+docker-compose -f ubuntu-mdns-docker-compose.yml up --remove-orphan
+
+Zabbix7 (June 8, 2024. Nancy and Kendall and step-son here)
+docker build -t zabbix7-ubuntu-mdns-ext:latest -f Zabbix7MdnsDockerfile .
+docker-compose -f zabbix7-ubuntu-mdns-docker-compose.yml up --remove-orphan
+
 
 
 TROUBLESHOOTING STEPS

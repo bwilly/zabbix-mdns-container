@@ -1,50 +1,38 @@
 # Use the Zabbix server image as the base
-#FROM zabbix/zabbix-server-pgsql:ubuntu-latest
 FROM zabbix/zabbix-server-pgsql:ubuntu-7.0-latest
 
-
-# Install additional packages if necessary
-#RUN apk add --no-cache <package-name>
-
+# Switch to root user
 USER root
 
-# Install necessary packages using apt-get instead of apk
-RUN apt-get update && apt-get install -y \
-    nano \
-    avahi-daemon \
-    avahi-utils \
-    dbus \
-    libnss3-dev\
-#nss-mdns \
-    bash
-#    && rm -rf /var/lib/apt/lists/*
+# Commented out: Install additional packages using apt-get
+#RUN apt-get update && apt-get install -y \
+#    nano \
+#    avahi-daemon \
+#    avahi-utils \
+#    dbus \
+#    libnss3-dev\
+#    bash
 
+# Commented out: Copy a custom avahi-daemon.conf if you have specific configurations
+#COPY avahi-daemon.conf /etc/avahi/avahi-daemon.conf
 
-# Copy a custom avahi-daemon.conf if you have specific configurations
-COPY avahi-daemon.conf /etc/avahi/avahi-daemon.conf
+# Commented out: Setup D-Bus
+#RUN dbus-uuidgen > /var/lib/dbus/machine-id
 
-# Setup D-Bus
-RUN dbus-uuidgen > /var/lib/dbus/machine-id
+# Commented out: Modify nsswitch.conf
+#RUN echo 'hosts: files mdns_minimal [NOTFOUND=return] dns' >> /etc/nsswitch.conf
 
-RUN echo 'hosts: files mdns_minimal [NOTFOUND=return] dns' >> /etc/nsswitch.conf
+# Commented out: Expose the mDNS UDP port 5353
+#EXPOSE 5353
 
+# Commented out: Copy new scripts or configuration files if needed
+#COPY custom-script.sh /usr/local/bin/custom-script.sh
 
-# Expose the mDNS UDP port 5353
-EXPOSE 5353
+# Commented out: Make sure the custom script is executable
+#RUN chmod +x /usr/local/bin/custom-script.sh
 
-
-# Optionally, copy new scripts or configuration files if needed
-COPY custom-script.sh /usr/local/bin/custom-script.sh
-
-# Make sure the custom script is executable
-RUN chmod +x /usr/local/bin/custom-script.sh
-
-# Switch back to the non-root user before setting the ENTRYPOINT
+# Commented out: Switch back to the non-root user before setting the ENTRYPOINT
 #USER 1997
 
-# Set the ENTRYPOINT to use the custom script
-ENTRYPOINT ["/usr/local/bin/custom-script.sh"]
-
-# Correct CMD to the original from the base image
+# Use the default entry point and command from the base image to start Zabbix server
 CMD ["/usr/sbin/zabbix_server", "--foreground", "-c", "/etc/zabbix/zabbix_server.conf"]
-

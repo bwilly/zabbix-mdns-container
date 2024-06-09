@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   postgres-server:
     image: postgres:latest
@@ -13,30 +14,14 @@ services:
       - ubuntu-zabbix-net
     restart: unless-stopped
 
-  zabbix-snmptraps:
-    image: zabbix/zabbix-snmptraps:latest
-    container_name: zabbix-snmptraps
-    volumes:
-      - /zbx_instance/snmptraps:/var/lib/zabbix/snmptraps:rw
-      - /var/lib/zabbix/mibs:/usr/share/snmp/mibs:ro
-    networks:
-      - ubuntu-zabbix-net
-    ports:
-      - "162:1162/udp"
-    restart: unless-stopped
-
   zabbix-server-pgsql:
-    image: zabbix7-ubuntu-mdns-ext:latest
+    image: zabbix/zabbix-server-pgsql:ubuntu-7.0-latest
     container_name: zabbix-server-pgsql
-    volumes:
-      - ./log:/var/log/zabbix
     environment:
       - DB_SERVER_HOST=postgres-server
       - POSTGRES_USER=zabbix
       - POSTGRES_PASSWORD=saltzabbix80time
       - POSTGRES_DB=zabbix
-      - ZBX_ENABLE_SNMP_TRAPS=true
-      - ZBX_DEBUGLEVEL=3
     networks:
       - ubuntu-zabbix-net
     ports:
@@ -46,7 +31,7 @@ services:
     restart: unless-stopped
 
   zabbix-web-nginx-pgsql:
-    image: zabbix/zabbix-web-nginx-pgsql:latest
+    image: zabbix/zabbix-web-nginx-pgsql:ubuntu-7.0-latest
     container_name: zabbix-web-nginx-pgsql
     environment:
       - ZBX_SERVER_HOST=zabbix-server-pgsql
@@ -59,14 +44,13 @@ services:
     ports:
       - "88:8080"
       - "443:8443"
+    depends_on:
+      - zabbix-server-pgsql
     restart: unless-stopped
 
 networks:
   ubuntu-zabbix-net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.21.0.0/16
 
 volumes:
   zabbix_postgres_data:

@@ -59,3 +59,5 @@ root@06ab5e151956:/var/lib/zabbix# avahi-browse -a
 
 June 8, 2024 (nany, kens, eli here)
 going to 7.2 latest to struggle there since i have to struggle at all on 7.0 from 6.4 DB is a mess. starting over. how to pull latest 7.2 image and then create the extension of it. and, let's use tags this time rather than change names and pasths and shit.
+NO. 
+Instead, i stayed on plain, vanilla 7.0 zabbix w/ postgres. no-bwilly mdns
